@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Joyeuses Pâques</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffe6f0, #fff4cc);
+      font-family: 'Segoe UI', sans-serif;
+      color: #333;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #ff4081;
+      margin-top: 2rem;
+      animation: pop 1s ease-in-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .decor {
+      position: absolute;
+      width: 100px;
+      height: 130px;
+      border-radius: 50% 50% 45% 45%;
+      background: radial-gradient(circle, #ffb347, #ffcc33);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: float 4s ease-in-out infinite alternate;
+    }
+
+    .decor.f1 { left: 10%; top: 10%; background: #fbc4ff; animation-delay: 1s; }
+    .decor.f2 { left: 70%; top: 15%; background: #b6fcd5; animation-delay: 2s; }
+    .decor.f3 { left: 30%; top: 20%; background: #ffccff; animation-delay: 3s; }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
+
+    .petals {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .petal {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #ffd740;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: fall 10s linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); }
+      100% { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+    }
+
+    .form {
+      margin-top: 2rem;
+    }
+
+    input[type="text"] {
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 220px;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e91e63;
+    }
+
+    .link-output {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      word-break: break-all;
+      color: #444;
+      background: #fff3e0;
+      padding: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .signature {
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      color: #555;
+    }
+
+    .signature a {
+      color: #ff4081;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .music-btn {
+      margin-top: 1rem;
+      background: #ffd740;
+      color: #333;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .music-btn:hover {
+      background: #ffecb3;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      input[type="text"] {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Décorations flottantes -->
+  <div class="decor f1"></div>
+  <div class="decor f2"></div>
+  <div class="decor f3"></div>
+
+  <!-- Pétales animés -->
+  <div class="petals" id="petals"></div>
+
+  <div class="content">
+      <h2>Jean-Faustin</h2>
+      vous souhaite
+    <h1>Joyeuses Pâques !</h1>
+
+    <div class="signature" id="signature"></div>
+
+    <div class="form">
+      <label for="nomInput">Entre ton prénom pour partager cette carte :</label><br><br>
+      <input type="text" id="nomInput" placeholder="Ton prénom ou nom" />
+      <button onclick="genererLien()">Générer mon lien</button>
+
+      <div class="link-output" id="lienGenere" style="display: none;"></div>
+    </div>
+
+    <button class="music-btn" onclick="toggleMusic()">Activer/Désactiver la musique</button>
+  </div>
+
+  <!-- Musique de fond -->
+  <audio id="musique" loop autoplay volume="0.3">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6c71a0c3c4.mp3?filename=spring-march-14537.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    // Personnalisation du nom via URL
+    const params = new URLSearchParams(window.location.search);
+    const nom = params.get("nom");
+    const signature = document.getElementById("signature");
+
+    if (nom) {
+      const nomAffiche = decodeURIComponent(nom).replace(/([a-z])([A-Z])/g, "$1 $2");
+      signature.innerHTML = `Souhaité avec joie par <a href="#">${nomAffiche}</a>`;
+    }
+
+    // Lien généré
+    function genererLien() {
+      const input = document.getElementById("nomInput");
+      const nom = input.value.trim();
+      if (nom === "") {
+        alert("Merci d'entrer ton nom !");
+        return;
+      }
+
+      const nomURL = encodeURIComponent(nom.replace(/\s+/g, ""));
+      const lien = `${window.location.origin}${window.location.pathname}?nom=${nomURL}`;
+      const lienDiv = document.getElementById("lienGenere");
+      lienDiv.innerHTML = `Voici ton lien à partager : <br><strong>${lien}</strong>`;
+      lienDiv.style.display = "block";
+    }
+
+    // Musique
+    const musique = document.getElementById("musique");
+    function toggleMusic() {
+      if (musique.paused) {
+        musique.play();
+      } else {
+        musique.pause();
+      }
+    }
+
+    // Génération des pétales
+    const petalsContainer = document.getElementById("petals");
+    for (let i = 0; i < 40; i++) {
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = Math.random() * 100 + "%";
+      petal.style.animationDelay = Math.random() * 10 + "s";
+      petalsContainer.appendChild(petal);
+    }
+  </script>
+
+</body>
+</html>
